@@ -6,5 +6,7 @@ export const topics= async(req:Request,res:Response)=>{
     const topics = await Topic.find({
         deleted:false
     });
-    res.render("client/pages/topics/index");
+    res.render("client/pages/topics/index",{
+        pageTitle:"chủ đề bài hát"
+    });
 }
