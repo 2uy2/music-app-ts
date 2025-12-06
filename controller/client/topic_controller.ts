@@ -7,6 +7,6 @@ export const topics= async(req:Request,res:Response)=>{
         deleted:false
     });
     res.render("client/pages/topics/index",{
-        pageTitle:"chủ đề bài hát"
+        pageTitle: "chủ đề bài hát"
     });
 }
