@@ -29,3 +29,28 @@ if (aPlayer) {
 }
 
 // end APlayer
+
+// button-like
+const buttonLike = document.querySelector("[button-like]");
+if (buttonLike){
+    buttonLike.addEventListener("click",()=>{
+        const idSong = buttonLike.getAttribute("button-like");
+        const isActive = buttonLike.classList.contains("active");//kiểm tra có class avtive không
+        const typeLike = isActive? "dislike":"like"
+        const link =`/songs/like/${typeLike}/${idSong}`;
+        
+        const option = {
+            method:"PATCH"
+        }
+        fetch(link,option)
+            .then(res=>res.json())
+            .then(data=>{
+                const span = buttonLike.querySelector("span");
+                span.innerHTML=`${data.like} thích`;
+                buttonLike.classList.toggle("active");
+                console.log(data);
+            })
+
+    })
+}
+// end button-like
