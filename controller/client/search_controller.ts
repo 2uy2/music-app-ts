@@ -1,34 +1,57 @@
-import { Request,Response } from "express"
+import { Request, Response } from "express"
 import Song from "../../models/song_model";
-import { off } from "process";
+import { off, title } from "process";
 import Singer from "../../models/singer_model";
 import { convertToSlug } from "../../helper/convertToSlug";
-export const result= async(req:Request,res:Response)=>{
-    const keyword:string = req.query.keyword.toString();
-    let newSongs =[];
-    if(keyword){
-        const keywordRegex = new RegExp(keyword,"i");
+//get search/:type
+export const result = async (req: Request, res: Response) => {
+    const type: string = req.params.type.toString();
+    const keyword: string = req.query.keyword.toString();
+    let newSongs = [];
+    if (keyword) {
+        const keywordRegex = new RegExp(keyword, "i");
         //tạo ra slug không giấu có thêm giấu trừ 0 cách
         const stringSlug = convertToSlug(keyword);
-        const stringSlugRegex = new RegExp(stringSlug,"i")
-        const songs =await Song.find({
-            $or:[
-                {title:keywordRegex},
-                {slug:stringSlugRegex}
+        const stringSlugRegex = new RegExp(stringSlug, "i")
+        const songs = await Song.find({
+            $or: [
+                { title: keywordRegex },
+                { slug: stringSlugRegex }
             ]
-            
-        });
 
+        });
         for (const song of songs) {
             const infoSinger = await Singer.find({
-                _id:song.singerId
+                _id: song.singerId
             })
-            song["infoSinger"]=infoSinger;
+            // song["infoSinger"] = infoSinger; dùng fetch API không cho dùng cú pháp này
+            newSongs.push({
+                id:song.id,
+                title:song.title,
+                avatar:song.avatar,
+                like:song.like,
+                slug:song.slug,
+                infoSinger:infoSinger.map(singer => singer.fullName)
+            })
         }
-        newSongs=songs
+        // newSongs = songs;
+        switch (type) {
+            case "result":
+
+                res.render("client/pages/search/result", {
+                    pageTitle: `kết quả ${keyword}`,
+                    songs: newSongs
+                })
+                break;
+            case "suggest":
+                res.json({
+                    code: 200,
+                    message: "thành công",
+                    songs: newSongs
+                })
+                break;
+            default: break;
+        }
     }
-    res.render("client/pages/search/result",{
-        pageTitle:`kết quả ${keyword}`,
-        songs:newSongs
-    })
+
 }

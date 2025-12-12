@@ -85,3 +85,57 @@ if (buttonFavorite){
     })
 }
 // end button-like
+
+// search suggest
+const boxSearch = document.querySelector(".box-search");
+if(boxSearch){
+    const input = boxSearch.querySelector("input[name='keyword']");
+    const boxSuggest = document.querySelector(".inner-suggest");
+    input.addEventListener("keyup",()=>{
+        const keyword = input.value;
+         // 👉 Nếu input trống → tắt gợi ý
+        if (keyword.trim() === "") {
+            boxSuggest.classList.remove("show");
+            boxList.innerHTML = "";
+            return; 
+        }
+
+        const link = `/search/suggest?keyword=${keyword}`;
+        const option ={
+            method:"GET",//phương thức get cũng không cần cấu hình
+        }
+        fetch(link,option)
+            .then(res=>res.json())
+            .then(data=>{
+               
+                const songs=data.songs;
+                if(songs.length>0){
+                    boxSuggest.classList.add("show");
+                    const htmls = songs.map((song)=>{
+                        return `
+                           <a href="/songs/detail/${song.slug}" class="inner-item">
+                                <div class="inner-image">
+                                    <img src=${song.avatar} />
+                                </div>
+
+                                <div class="inner-info">
+                                    <div class="inner-title">${song.title}</div>
+
+                                    <div class="inner-singer">
+                                        <i class="fa-solid fa-microphone-lines"></i>
+                                        ${song.infoSinger.map(singer => singer.fullName).join(", ")}
+                                    </div>
+                                </div>
+                            </a>
+                        `
+                    });
+                    const boxList = boxSearch.querySelector(".inner-list");
+                    boxList.innerHTML=htmls.join(""); //join biến 1 mảng thành 1 chuỗi
+                }
+                else{
+                   boxSuggest.classList.remove("show"); 
+                }
+            })
+    })
+}
+//end search suggest
