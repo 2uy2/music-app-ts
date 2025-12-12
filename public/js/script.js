@@ -78,7 +78,6 @@ if (buttonFavorite){
             .then(data=>{
                 if(data.code==200){
                     buttonFavorite.classList.toggle("active");
-                   
                 }
                 
             })

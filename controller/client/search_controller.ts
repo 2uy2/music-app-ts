@@ -1,0 +1,34 @@
+import { Request,Response } from "express"
+import Song from "../../models/song_model";
+import { off } from "process";
+import Singer from "../../models/singer_model";
+import { convertToSlug } from "../../helper/convertToSlug";
+export const result= async(req:Request,res:Response)=>{
+    const keyword:string = req.query.keyword.toString();
+    let newSongs =[];
+    if(keyword){
+        const keywordRegex = new RegExp(keyword,"i");
+        //tạo ra slug không giấu có thêm giấu trừ 0 cách
+        const stringSlug = convertToSlug(keyword);
+        const stringSlugRegex = new RegExp(stringSlug,"i")
+        const songs =await Song.find({
+            $or:[
+                {title:keywordRegex},
+                {slug:stringSlugRegex}
+            ]
+            
+        });
+
+        for (const song of songs) {
+            const infoSinger = await Singer.find({
+                _id:song.singerId
+            })
+            song["infoSinger"]=infoSinger;
+        }
+        newSongs=songs
+    }
+    res.render("client/pages/search/result",{
+        pageTitle:`kết quả ${keyword}`,
+        songs:newSongs
+    })
+}
