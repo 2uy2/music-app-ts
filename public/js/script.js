@@ -31,9 +31,10 @@ if (aPlayer) {
 // end APlayer
 
 // button-like
-const buttonLike = document.querySelector("[button-like]");
-if (buttonLike){
-    buttonLike.addEventListener("click",()=>{
+const listButtonLike = document.querySelectorAll("[button-like]");
+if (listButtonLike.length>0){
+    listButtonLike.forEach(buttonLike => {
+        buttonLike.addEventListener("click",()=>{
         const idSong = buttonLike.getAttribute("button-like");
         const isActive = buttonLike.classList.contains("active");//kiểm tra có class avtive không
         const typeLike = isActive? "dislike":"like"
@@ -54,6 +55,8 @@ if (buttonLike){
             })
 
     })
+    });
+    
 }
 // end button-like
 // button-favorite
