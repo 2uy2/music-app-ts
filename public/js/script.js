@@ -2,8 +2,8 @@
 const aPlayer = document.querySelector("#aplayer");
 if (aPlayer) {
     let dataSong = aPlayer.getAttribute("data-song");
-    dataSong= JSON.parse(dataSong);
-    let dataSinger =aPlayer.getAttribute("data-singer");
+    dataSong = JSON.parse(dataSong);
+    let dataSinger = aPlayer.getAttribute("data-singer");
     dataSinger = JSON.parse(dataSinger);
 
     const ap = new APlayer({
@@ -14,17 +14,31 @@ if (aPlayer) {
             url: dataSong.audio,
             cover: dataSong.avatar
         }],
-        autoplay:true
+        autoplay: true
     });
 
     const avatar = document.querySelector(".singer-detail .inner-avatar");
     // css cho avatar
     // xử lí sự kiện khi bấm play bài hát và khi dừng bài hát
     ap.on('play', function () {
-        avatar.style.animationPlayState ="running";;
+        avatar.style.animationPlayState = "running";;
     });
     ap.on('pause', function () {
-        avatar.style.animationPlayState ="paused";;
+        avatar.style.animationPlayState = "paused";;
+    });
+    ap.on('ended', function () { //xử lý sau khi kết thúc bài hát
+        const link = `/songs/listen/${dataSong._id}`;
+
+        const option = {
+            method: "PATCH"
+        }
+        fetch(link, option)
+            .then(res => res.json())
+            .then(data => {
+                const elementInnerListen = document.querySelector(".singer-detail .inner-listen span");
+                elementInnerListen.innerHTML=`${data.listen} lượt nghe`
+                
+            })
     });
 }
 
@@ -32,54 +46,54 @@ if (aPlayer) {
 
 // button-like
 const listButtonLike = document.querySelectorAll("[button-like]");
-if (listButtonLike.length>0){
+if (listButtonLike.length > 0) {
     listButtonLike.forEach(buttonLike => {
-        buttonLike.addEventListener("click",()=>{
-        const idSong = buttonLike.getAttribute("button-like");
-        const isActive = buttonLike.classList.contains("active");//kiểm tra có class avtive không
-        const typeLike = isActive? "dislike":"like"
-        const link =`/songs/like/${typeLike}/${idSong}`;
-        
-        const option = {
-            method:"PATCH"
-        }
-        fetch(link,option)
-            .then(res=>res.json())
-            .then(data=>{
-                if(data.code==200){
-                    const span = buttonLike.querySelector("span");
-                    span.innerHTML=`${data.like} thích`;
-                    buttonLike.classList.toggle("active");
-                    console.log(data);
-                }
-            })
+        buttonLike.addEventListener("click", () => {
+            const idSong = buttonLike.getAttribute("button-like");
+            const isActive = buttonLike.classList.contains("active"); //kiểm tra có class avtive không
+            const typeLike = isActive ? "dislike" : "like"
+            const link = `/songs/like/${typeLike}/${idSong}`;
 
-    })
+            const option = {
+                method: "PATCH"
+            }
+            fetch(link, option)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.code == 200) {
+                        const span = buttonLike.querySelector("span");
+                        span.innerHTML = `${data.like} thích`;
+                        buttonLike.classList.toggle("active");
+                        console.log(data);
+                    }
+                })
+
+        })
     });
-    
+
 }
 // end button-like
 // button-favorite
 const buttonFavorite = document.querySelector("[button-favorite]");
 
-if (buttonFavorite){
-    buttonFavorite.addEventListener("click",()=>{
+if (buttonFavorite) {
+    buttonFavorite.addEventListener("click", () => {
         const idSong = buttonFavorite.getAttribute("button-favorite");
-        
-        const isActive = buttonFavorite.classList.contains("active");//kiểm tra có class avtive không
-        const typeFavorite = isActive? "unfavorite":"favorite"
-        const link =`/songs/favorite/${typeFavorite}/${idSong}`;
-        
+
+        const isActive = buttonFavorite.classList.contains("active"); //kiểm tra có class avtive không
+        const typeFavorite = isActive ? "unfavorite" : "favorite"
+        const link = `/songs/favorite/${typeFavorite}/${idSong}`;
+
         const option = {
-            method:"PATCH"
+            method: "PATCH"
         }
-        fetch(link,option)
-            .then(res=>res.json())
-            .then(data=>{
-                if(data.code==200){
+        fetch(link, option)
+            .then(res => res.json())
+            .then(data => {
+                if (data.code == 200) {
                     buttonFavorite.classList.toggle("active");
                 }
-                
+
             })
 
     })
@@ -88,30 +102,30 @@ if (buttonFavorite){
 
 // search suggest
 const boxSearch = document.querySelector(".box-search");
-if(boxSearch){
+if (boxSearch) {
     const input = boxSearch.querySelector("input[name='keyword']");
     const boxSuggest = document.querySelector(".inner-suggest");
-    input.addEventListener("keyup",()=>{
+    input.addEventListener("keyup", () => {
         const keyword = input.value;
-         // 👉 Nếu input trống → tắt gợi ý
+        // 👉 Nếu input trống → tắt gợi ý
         if (keyword.trim() === "") {
             boxSuggest.classList.remove("show");
             boxList.innerHTML = "";
-            return; 
+            return;
         }
 
         const link = `/search/suggest?keyword=${keyword}`;
-        const option ={
-            method:"GET",//phương thức get cũng không cần cấu hình
+        const option = {
+            method: "GET", //phương thức get cũng không cần cấu hình
         }
-        fetch(link,option)
-            .then(res=>res.json())
-            .then(data=>{
-               
-                const songs=data.songs;
-                if(songs.length>0){
+        fetch(link, option)
+            .then(res => res.json())
+            .then(data => {
+
+                const songs = data.songs;
+                if (songs.length > 0) {
                     boxSuggest.classList.add("show");
-                    const htmls = songs.map((song)=>{
+                    const htmls = songs.map((song) => {
                         return `
                            <a href="/songs/detail/${song.slug}" class="inner-item">
                                 <div class="inner-image">
@@ -130,10 +144,9 @@ if(boxSearch){
                         `
                     });
                     const boxList = boxSearch.querySelector(".inner-list");
-                    boxList.innerHTML=htmls.join(""); //join biến 1 mảng thành 1 chuỗi
-                }
-                else{
-                   boxSuggest.classList.remove("show"); 
+                    boxList.innerHTML = htmls.join(""); //join biến 1 mảng thành 1 chuỗi
+                } else {
+                    boxSuggest.classList.remove("show");
                 }
             })
     })
