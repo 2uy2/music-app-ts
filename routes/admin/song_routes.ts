@@ -3,5 +3,6 @@ const router:Router=Router();
 
 import * as controller from "../../controller/admin/song_controller";
 router.get("/",controller.index);
+router.get("/create",controller.create);
 
 export const songRoutes:Router = router;

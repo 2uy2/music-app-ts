@@ -1,5 +1,7 @@
 import { Request,Response } from "express";
 import Song from "../../models/song_model";
+import Topic from "../../models/topic_model";
+import Singer from "../../models/singer_model";
 
 //get admin/songs
 export const index = async (req:Request,res:Response)=>{
@@ -10,4 +12,22 @@ export const index = async (req:Request,res:Response)=>{
     pageTitle:"quản lý bài hát",
     songs:songs
    })
+}
+//get admin/songs/create
+export const create = async (req:Request,res:Response)=>{
+    const topics = await Topic.find({
+        status:"active",
+        deleted:false
+    }).select("title");
+    const singers = await Singer.find({
+        status:"active",
+        deleted:false,
+    }).select("fullName");
+
+
+    res.render("admin/pages/songs/create",{
+        pageTitle:"thêm mới bài hát",
+        topics:topics,
+        singers:singers
+    })
 }
