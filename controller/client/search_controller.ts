@@ -10,11 +10,12 @@ export const result = async (req: Request, res: Response) => {
     let newSongs = [];
     if (keyword) {
         const keywordRegex = new RegExp(keyword, "i");
-        //tạo ra slug không giấu có thêm giấu trừ 0 cách
+        //tạo ra slug không giấu có thêm giấu trừ thay dấu cách
         const stringSlug = convertToSlug(keyword);
         const stringSlugRegex = new RegExp(stringSlug, "i")
         const songs = await Song.find({
             $or: [
+                //tìm bằng hai điều kiện, 1 là title hai là slug
                 { title: keywordRegex },
                 { slug: stringSlugRegex }
             ]

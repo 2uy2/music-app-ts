@@ -110,7 +110,7 @@ if (boxSearch) {
         // 👉 Nếu input trống → tắt gợi ý
         if (keyword.trim() === "") {
             boxSuggest.classList.remove("show");
-            boxList.innerHTML = "";
+            
             return;
         }
 
