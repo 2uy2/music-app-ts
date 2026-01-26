@@ -6,6 +6,7 @@ import clientRoutes from './routes/client/index_route';
 import adminRoutes from './routes/admin/index_route';
 import { systemConfig } from './config/config';
 import path from 'path';
+import methodOverride  from 'method-override';
 
 dotenv.config();
 database.connect();
@@ -18,6 +19,8 @@ app.use(bodyParser.urlencoded({extended:false}));
 //hoặc dùng cách này
 // app.use(express.json());
 // app.use(express.urlencoded({extended:true}));
+
+app.use(methodOverride('_method'))
 
 app.use(express.static("public"));
 

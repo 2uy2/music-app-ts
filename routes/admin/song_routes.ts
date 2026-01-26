@@ -17,5 +17,14 @@ router.post(
     ]),
     uploadCloud.uploadFields,
     controller.createPost);
+router.get("/edit/:id",controller.edit);
 
+router.patch(
+    "/edit/:id",
+    upload.fields([
+        {name:"avatar",maxCount:1},
+        {name:"audio",maxCount:1}
+    ]),
+    uploadCloud.uploadFields,
+    controller.editPatch);//vì là fields nên dữ liệu mặc định là mảng, nên ta phải fix lại lấy file đầu tiên(thực chất chỉ có 1 file)
 export const songRoutes:Router = router;
