@@ -38,9 +38,9 @@ block main
                                 data-singer = singer)
                     .inner-desc
                         .inner-label Mô tả
-                        .inner-text #{song.description}
+                        .inner-text !{song.description}
 
                     .inner-desc
                         .inner-label lời bài hát
                         .inner-text
-                            | !{song.lyrics}
+                            | #{song.lyrics}
